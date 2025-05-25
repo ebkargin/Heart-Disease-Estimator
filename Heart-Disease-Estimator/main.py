@@ -1,6 +1,6 @@
 import pandas as pd
 from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
 import joblib
 
 
@@ -50,7 +50,7 @@ def gender_input(prompt):
 
 def train_save():
     df = pd.read_csv('cardio_train.csv', delimiter=';')
-    df = df.rename(columns={ #Sütunlar Türkçeleştirildi.
+    df = df.rename(columns={  # Sütunlar Türkçeleştirildi.
         "id": "id",
         "age": "yas",
         "gender": "cinsiyet",
@@ -65,27 +65,38 @@ def train_save():
         "active": "fiziksel_aktif",
         "cardio": "kalp_hastaligi"
     })
-    df['yas'] = (df['yas'] / 365.25).astype(int) #Gün cinsinden verilen yaş yıla çevrilir.
-    df.drop(columns='id', inplace=True) #id kalp rahatsızlığı tahmininde gereksiz bir nitelik olduğu için attım
-    df['bmi'] = df['kilo_kg'] / ((df['boy_cm'] / 100) ** 2) #Model performansını arttırmak amacıyla vücut kitle endeksi ekledim.
-    df['tansiyon_farki'] = df['buyuk_tansiyon'] - df['kucuk_tansiyon'] #Model performansını arttırmak amacıyla yapıldı.
+    df['yas'] = (df['yas'] / 365.25).astype(int)  # Gün cinsinden verilen yaş yıla çevrilir.
+    df.drop(columns='id', inplace=True)  # id kalp rahatsızlığı tahmininde gereksiz bir nitelik olduğu için attım
+    df['bmi'] = df['kilo_kg'] / ((df['boy_cm'] / 100) ** 2)  # Model performansını arttırmak amacıyla vücut kitle endeksi ekledim.
+    df['tansiyon_farki'] = df['buyuk_tansiyon'] - df['kucuk_tansiyon']  # Model performansını arttırmak amacıyla yapıldı.
 
-    x = df.drop(columns='kalp_hastaligi') #Kalp hastalığı hariç tüm öznitelikler.
-    y = df['kalp_hastaligi'] #Kalp hastalığı tahminlenmek istenen nitelik.
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, stratify=y, random_state=42) #Veriseti eğitim amaçla train ve deneme amaçlı test olmak üzere ikiye bölündü.
+    x = df.drop(columns='kalp_hastaligi')  # Kalp hastalığı hariç tüm öznitelikler.
+    y = df['kalp_hastaligi']  # Kalp hastalığı tahminlenmek istenen nitelik.
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, stratify=y, random_state=42)  # Veriseti eğitim amaçla train ve deneme amaçlı test olmak üzere ikiye bölündü.
+    param_dist = {
+        'n_estimators': [100, 150, 200],
+        'max_depth': [3, 5, 7],
+        'learning_rate': [0.01, 0.05, 0.1],
+        'subsample': [0.5, 0.6, 0.7, 1.0],
+        'colsample_bytree': [0.5, 0.6, 0.7, 1.0],
+        'min_child_weight': [1, 3, 5]
+    }
 
-    model = XGBClassifier(
-        n_estimators=200,
-        max_depth=5,
-        learning_rate=0.05,
-        subsample=0.6,
-        colsample_bytree=0.6,
-        min_child_weight=1,
-        eval_metric='logloss',
+    base_model = XGBClassifier(eval_metric='logloss',random_state=42)
+    random_search = RandomizedSearchCV(
+        estimator=base_model,
+        param_distributions=param_dist,
+        n_iter=20,
+        cv=3,
+        scoring='roc_auc',
+        verbose=1,
+        n_jobs=-1,
         random_state=42
     )
-    model.fit(x_train, y_train)
-    joblib.dump(model, 'heart_disease_model.pkl') #Model eğitimini her çalıştırmada tekrar tekrar yapmamak amacıyla joblib kütüphanesinden dump metoduyla diske kaydettim.
+    random_search.fit(x_train, y_train)
+    best_model = random_search.best_estimator_
+    joblib.dump(best_model, 'heart_disease_model.pkl')  # Model eğitimini her çalıştırmada tekrar tekrar yapmamak amacıyla joblib kütüphanesinden dump metoduyla diske kaydettim.
+
 
 def program():
     model = joblib.load('heart_disease_model.pkl') #Eğitilmiş modeli diskten çektim.
