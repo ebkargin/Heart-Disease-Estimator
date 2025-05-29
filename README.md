@@ -1,99 +1,65 @@
+# Kalp Hastalığı Riski Tahmin Projesi
 
-# 🫀 Kalp Hastalığı Tahmincisi
+## Proje Özeti
 
-## 1 - Kullanılan Modeller
+Bu projede, kalp hastalığı riskini tahmin etmeye yönelik çeşitli makine öğrenmesi modelleri eğitilmiş ve karşılaştırılmıştır. Kullanılan veri seti, bireylerin çeşitli tıbbi ve demografik özelliklerini içermektedir. Amaç, özellikle kalp hastası olan bireyleri (pozitif sınıf) doğru şekilde tespit etmektir; çünkü bu sınıfın doğru sınıflandırılması, sağlık açısından kritik önem taşımaktadır.
 
-Proje süresince veri seti aşağıdaki üç farklı makine öğrenmesi algoritması ile eğitildi:
+## Proje Detayları
 
-1. **XGBoost Classifier**
-2. **Random Forest Classifier**
-3. **Logistic Regression**
+### 1. Kullanılan Modeller:
 
-Modeller karşılaştırıldıktan sonra, **en iyi sonuçları veren XGBoost Classifier** tercih edildi.
+1. XGBoost Classifier  
+2. Random Forest Classifier  
+3. Logistic Regression  
+4. KNN Classifier  
 
----
+Proje süresince veri seti bu modellere göre eğitilmiş olup aralarından en iyi sonuçları veren XGBoost Classifier seçilmiştir.
 
-## 2 - Performans Karşılaştırmaları
+### 2. Performans Karşılaştırmaları
 
-### ✅ Pozitif Sınıf (Kalp hastası bireyler)
+#### Pozitif Sınıf:
 
-| **MODEL**        | **ACC.** | **R_AUC** | **PREC.** | **REC.** | **F1**  |
-|------------------|----------|-----------|-----------|----------|---------|
-| **XGBOOST**      | 0.730    | **0.8006**| 0.76      | **0.69** | **0.72**|
-| Random Forest    | **0.732**| 0.7993    | 0.76      | 0.68     | 0.71    |
-| Logistic Regr.   | 0.712    | 0.7760    | 0.73      | 0.67     | 0.70    |
+| MODEL           | ACC. | R_AUC | PREC. | REC  | F1   |
+|------------------|------|--------|--------|------|------|
+| XGBOOST         | 0.73 | 0.80   | 0.76   | 0.69 | 0.72 |
+| Random Forest   | 0.732| 0.798  | 0.76   | 0.68 | 0.71 |
+| Logistic Regr.  | 0.72 | 0.784  | 0.74   | 0.69 | 0.72 |
+| KNN Class.      | 0.55 | 0.568  | 0.55   | 0.537| 0.544|
 
----
+#### Negatif Sınıf:
 
-### ❌ Negatif Sınıf (Sağlıklı bireyler)
+| MODEL           | ACC. | R_AUC | PREC. | REC  | F1   |
+|------------------|------|--------|--------|------|------|
+| XGBOOST         | 0.73 | 0.80   | 0.715  | 0.779| 0.745|
+| Random Forest   | 0.732| 0.798  | 0.71   | 0.786| 0.75 |
+| Logistic Regr.  | 0.72 | 0.784  | 0.71   | 0.76 | 0.73 |
+| KNN Class.      | 0.55 | 0.568  | 0.549  | 0.56 | 0.55 |
 
-| **MODEL**        | **ACC.** | **R_AUC** | **PREC.** | **REC.** | **F1**  |
-|------------------|----------|-----------|-----------|----------|---------|
-| **XGBOOST**      | 0.730    | **0.8006**| 0.715     | **0.779**| **0.745**|
-| Random Forest    | **0.732**| 0.7993    | **0.71**  | 0.786    | **0.745**|
-| Logistic Regr.   | 0.712    | 0.7760    | 0.73      | 0.67     | 0.70    |
+### Karışıklık Matrisleri:
 
----
+**XGBoost:**  
+[[8181 2325]  
+ [3265 7229]]
 
-### 🔢 Karışıklık Matrisleri (Confusion Matrix)
+**Logistic Regression:**  
+[[5297 1670]  
+ [2190 4843]]
 
-- **XGBoost:**
-  ```
-  [[8181 2325]
-   [3265 7229]]
-  ```
+**Random Forest Classifier:**  
+[[8266 2240]  
+ [3390 7104]]
 
-- **Random Forest:**
-  ```
-  [[8266 2240]
-   [3390 7104]]
-  ```
+**KNN Classifier:**  
+[[3008 2296]  
+ [2384 2812]]
 
-- **Logistic Regression:**
-  ```
-  [[7908 2598]
-   [3444 7050]]
-  ```
+### 3. Değerlendirme ve Yorum:
 
----
+- XGBoost, ROC AUC skorunda en yüksek değere sahip olan modeldir (0.8006) ve modelin pozitif sınıfı ayırt etme başarısında en iyi performansı gösterdi.
+- Random Forest modeli XGBoost’a yakın sonuçlar üretti ancak recall ve AUC skorlarında geri kaldı.
+- Logistic Regression, doğrusal sınırlamalardan dolayı diğer modellere göre daha düşük performans gösterdi çünkü elimizdeki veri seti karmaşık ilişkilerden oluşmakta.
+- Karışıklık Matrisi sonuçları, XGBoost’un pozitif sınıfı yani kalp hastalarını tahminlemekte daha başarılı olduğunu göstermiştir.
 
-## 3 - Değerlendirme ve Yorum
+### 4. Sonuç:
 
-- **XGBoost**, ROC AUC skorunda **en yüksek değere** ulaşmıştır (**0.8006**) ve pozitif sınıf (hastalar) ayrımında **en başarılı modeldir**.
-- **Random Forest** XGBoost’a **çok yakın sonuçlar** üretmiştir ancak **recall ve AUC skorlarında** geride kalmıştır.
-- **Logistic Regression**, doğrusal sınıflandırma yapısından dolayı daha **düşük performans** göstermiştir çünkü veri seti doğrusal olmayan karmaşık ilişkiler içermektedir.
-- Karışıklık matrisine göre **XGBoost**, pozitif sınıfı yani kalp hastası bireyleri tanıma konusunda diğer modellere göre daha başarılıdır.
-
----
-
-## 4 - Sonuç
-
-XGBoost modeli, **RandomizedSearchCV** ile hiperparametre optimizasyonu yapıldıktan sonra hem **genel doğruluk**, hem de **pozitif sınıf başarısı** açısından en iyi performansı göstermiştir.
-
-Pozitif sınıfın (kalp hastası bireyler) **doğru tahmini kritik** olduğundan, bu projede **XGBoost tercih edilmiştir**. Random Forest modeli iyi bir alternatif olarak dursa da, hasta tahminindeki performans kriteri açısından geridedir.
-
----
-
-## ⚙️ Kurulum
-
-1. Python ortamınızı kurun (Python 3.10 veya üzeri önerilir):
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # Windows: venv\Scripts\activate
-    ```
-
-2. Gerekli kütüphaneleri yükleyin:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3. `cardio_train.csv` dosyasını proje dizinine yerleştirin.
-
-4. Programı başlatın:
-    ```bash
-    python main.py
-    ```
-
----
-
-> 📌 Not: `main.py` çalıştırıldığında eğer daha önce eğitilmiş bir model yoksa, sistem modeli otomatik olarak eğitir ve ardından kullanıcıdan veri alarak kalp hastalığı tahmininde bulunur.
+XGBoost modeli RandomizedSearchCV ile hiperparametre optimizasyonu yapıldıktan sonra hem genel doğruluk hem de pozitif sınıf başarısı açısından en iyi performansı göstermiştir. Pozitif sınıfın yani kalp hastası bireylerin tahmini kritik olduğundan, bu projede XGBoost tercih edilmiştir. Random Forest Classifier her ne kadar hiperparametre optimizasyonu yapıldığında çok ufak bir farkla XGBoost’a göre daha yüksek accuracy’e sahip olsa da pozitif sınıfın tahmininde XGBoost’a göre geri kalmıştır.
