@@ -55,9 +55,10 @@ Proje süresince veri seti bu modellere göre eğitilmiş olup aralarından en i
 
 ### 3. Değerlendirme ve Yorum:
 
+- KNN modelinin doğruluk oranı yaklaşık %55 ile diğer modellere göre oldukça düşüktür, bu da modelin veri seti üzerinde sınıflandırma başarısının zayıf olduğunu gösterir.
 - XGBoost, ROC AUC skorunda en yüksek değere sahip olan modeldir (0.8006) ve modelin pozitif sınıfı ayırt etme başarısında en iyi performansı gösterdi.
 - Random Forest modeli XGBoost’a yakın sonuçlar üretti ancak recall ve AUC skorlarında geri kaldı.
-- Logistic Regression, doğrusal sınırlamalardan dolayı diğer modellere göre daha düşük performans gösterdi çünkü elimizdeki veri seti karmaşık ilişkilerden oluşmakta.
+- Logistic Regression, doğrusal sınırlayıcıya sahip olduğundan ve elimizdeki veri seti karmaşık ilişkilerden oluştuğu için iyi performans vermemiştir. Yapılan scale(ölçeklendirme) işlemleri bir miktar da olsa modelde iyileştirme sağlamasına rağmen performans olarak XGBoost’un gerisinde kalmıştır
 - Karışıklık Matrisi sonuçları, XGBoost’un pozitif sınıfı yani kalp hastalarını tahminlemekte daha başarılı olduğunu göstermiştir.
 
 ### 4. Sonuç:
